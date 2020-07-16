@@ -2,23 +2,17 @@
 
 namespace backend\controllers;
 
-use backend\models\SignupFormManager;
-use backend\models\UpdateManager;
-use common\models\AdminPanelSearch;
-use common\models\ManagerDashboardAdminSearch;
-use common\models\ManagerDashboardSearch;
-use common\models\UserPersonalInfo;
 use Yii;
-use common\models\User;
-use common\models\UserSearch;
+use common\models\FixedBonuses;
+use common\models\FixedBonusSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * UserController implements the CRUD actions for User model.
+ * FixedBonusController implements the CRUD actions for FixedBonuses model.
  */
-class ManagersController extends Controller
+class FixedBonusController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -36,13 +30,13 @@ class ManagersController extends Controller
     }
 
     /**
-     * Lists all User models.
+     * Lists all FixedBonuses models.
      * @return mixed
      */
     public function actionIndex()
     {
         if (Yii::$app->user->identity){
-            $searchModel = new UserSearch();
+            $searchModel = new FixedBonusSearch();
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
             return $this->render('index', [
@@ -53,11 +47,10 @@ class ManagersController extends Controller
         else{
             return $this->redirect('/admin/site/login');
         }
-
     }
 
     /**
-     * Displays a single User model.
+     * Displays a single FixedBonuses model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -65,16 +58,8 @@ class ManagersController extends Controller
     public function actionView($id)
     {
         if (Yii::$app->user->identity){
-            $searchModel_deal = new ManagerDashboardAdminSearch();
-            $searchModel_deal->id_manager = $id;
-            $dataProvider_deal = $searchModel_deal->search(Yii::$app->request->queryParams);
-
-
-
             return $this->render('view', [
                 'model' => $this->findModel($id),
-                'dataProvider_deal' => $dataProvider_deal,
-                'searchModel_deal' => $searchModel_deal
             ]);
         }
         else{
@@ -82,12 +67,18 @@ class ManagersController extends Controller
         }
     }
 
-    public function actionCreate(){
+    /**
+     * Creates a new FixedBonuses model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
+     */
+    public function actionCreate()
+    {
         if (Yii::$app->user->identity){
-            $model = new SignupFormManager();
-            if ($model->load(Yii::$app->request->post()) && $model->signup()) {
-                Yii::$app->session->setFlash('success', 'Thank you for registration. Please check your inbox for verification email.');
-                return $this->redirect(['managers/index']);
+            $model = new FixedBonuses();
+
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
             }
 
             return $this->render('create', [
@@ -97,11 +88,10 @@ class ManagersController extends Controller
         else{
             return $this->redirect('/admin/site/login');
         }
-
     }
 
     /**
-     * Updates an existing User model.
+     * Updates an existing FixedBonuses model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -110,17 +100,9 @@ class ManagersController extends Controller
     public function actionUpdate($id)
     {
         if (Yii::$app->user->identity){
-            $model = new UpdateManager();
-            $user = $this->findModel($id);
-            $model->username = $user->username;
-            $model->email = $user->email;
-            $model->status = $user->status;
-            $model->id = $user->id;
+            $model = $this->findModel($id);
 
-            $personalInfo = UserPersonalInfo::find()->where(['user_id' => $id])->one();
-            $model->name = $personalInfo->name;
-
-            if ($model->load(Yii::$app->request->post()) && $model->update($id)) {
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
                 return $this->redirect(['view', 'id' => $model->id]);
             }
 
@@ -131,11 +113,10 @@ class ManagersController extends Controller
         else{
             return $this->redirect('/admin/site/login');
         }
-
     }
 
     /**
-     * Deletes an existing User model.
+     * Deletes an existing FixedBonuses model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -146,27 +127,23 @@ class ManagersController extends Controller
         if (Yii::$app->user->identity){
             $this->findModel($id)->delete();
 
-            $auth = Yii::$app->authManager;
-            $auth->revokeAll($id);
-
             return $this->redirect(['index']);
         }
         else{
             return $this->redirect('/admin/site/login');
         }
-
     }
 
     /**
-     * Finds the User model based on its primary key value.
+     * Finds the FixedBonuses model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return User the loaded model
+     * @return FixedBonuses the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = User::findOne($id)) !== null) {
+        if (($model = FixedBonuses::findOne($id)) !== null) {
             return $model;
         }
 

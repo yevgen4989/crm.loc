@@ -36,13 +36,21 @@ class KpiController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new KpiManagerSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        if (Yii::$app->user->identity){
+            $searchModel = new KpiManagerSearch();
+            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+            return $this->render('index', [
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+            ]);
+        }
+        else{
+            return $this->redirect('/admin/site/login');
+        }
+
+
+
     }
 
     /**
@@ -53,9 +61,15 @@ class KpiController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        if (Yii::$app->user->identity){
+            return $this->render('view', [
+                'model' => $this->findModel($id),
+            ]);
+        }
+        else{
+            return $this->redirect('/admin/site/login');
+        }
+
     }
 
     /**
@@ -65,42 +79,55 @@ class KpiController extends Controller
      */
     public function actionCreate()
     {
-        $model = new KpiManager();
+        if (Yii::$app->user->identity){
+            $model = new KpiManager();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $date = DateTime::createFromFormat('m.Y', $model->date);
-            $date = $date->format('Y-m').'-'.date('d');
-            $model->date = $date;
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                $date = DateTime::createFromFormat('m.Y', $model->date);
+                $date = $date->format('Y-m').'-'.date('d');
+                $model->date = $date;
 
-            return $this->redirect(['view', 'id' => $model->id]);
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+
+            return $this->render('create', [
+                'model' => $model,
+            ]);
+        }
+        else{
+            return $this->redirect('/admin/site/login');
         }
 
-        return $this->render('create', [
-            'model' => $model,
-        ]);
+
     }
 
 
     public function actionCreateKpi($id)
     {
-        $model = new KpiManager();
-        $model->manager_id = $id;
+        if (Yii::$app->user->identity){
+            $model = new KpiManager();
+            $model->manager_id = $id;
 
-        $date = DateTime::createFromFormat('Y-m-d', date('Y-m-d'));
-        $date = $date->format('m.Y');
-        $model->date = $date;
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $date = DateTime::createFromFormat('m.Y', $model->date);
-            $date = $date->format('Y-m').'-'.date('d');
+            $date = DateTime::createFromFormat('Y-m-d', date('Y-m-d'));
+            $date = $date->format('m.Y');
             $model->date = $date;
 
-            return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                $date = DateTime::createFromFormat('m.Y', $model->date);
+                $date = $date->format('Y-m').'-'.date('d');
+                $model->date = $date;
+
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+
+            return $this->render('create', [
+                'model' => $model,
+            ]);
+        }
+        else{
+            return $this->redirect('/admin/site/login');
         }
 
-        return $this->render('create', [
-            'model' => $model,
-        ]);
     }
 
     /**
@@ -112,24 +139,30 @@ class KpiController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
-        $date = DateTime::createFromFormat('Y-m-d', $model->date);
-        $date = $date->format('m.Y');
-        $model->date = $date;
-
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $date = DateTime::createFromFormat('m.Y', $model->date);
-            $date = $date->format('Y-m').'-'.date('d');
+        if (Yii::$app->user->identity){
+            $model = $this->findModel($id);
+            $date = DateTime::createFromFormat('Y-m-d', $model->date);
+            $date = $date->format('m.Y');
             $model->date = $date;
 
 
-            return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                $date = DateTime::createFromFormat('m.Y', $model->date);
+                $date = $date->format('Y-m').'-'.date('d');
+                $model->date = $date;
+
+
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+
+            return $this->render('update', [
+                'model' => $model,
+            ]);
+        }
+        else{
+            return $this->redirect('/admin/site/login');
         }
 
-        return $this->render('update', [
-            'model' => $model,
-        ]);
     }
 
     /**
@@ -141,9 +174,15 @@ class KpiController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        if (Yii::$app->user->identity){
+            $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+            return $this->redirect(['index']);
+        }
+        else{
+            return $this->redirect('/admin/site/login');
+        }
+
     }
 
     /**

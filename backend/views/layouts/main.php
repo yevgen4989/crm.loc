@@ -37,11 +37,16 @@ AppAsset::register($this);
         'innerContainerOptions' => ['class' => 'container-fluid'],
     ]);
 
+
     $menuItems = [
         ['label' => 'Доска и Рейтинг', 'url' => ['/site/rating/']],
         ['label' => 'Менеджеры', 'url' => ['/managers/']],
         ['label' => 'KPI', 'url' => ['/kpi/']],
         ['label' => 'База аккаунтов', 'url' => ['/accounts/']],
+        ['label' => 'Услуги', 'url' => ['/services/']],
+        ['label' => 'Статусы', 'url' => ['/status/']],
+        ['label' => 'Типы контактов', 'url' => ['/type-contact/']],
+        ['label' => 'Фиксированные бонусы', 'url' => ['/fixed-bonus/']],
     ];
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-left'],
